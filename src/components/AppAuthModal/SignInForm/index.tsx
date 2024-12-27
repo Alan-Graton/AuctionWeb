@@ -1,3 +1,5 @@
+import { useAuthContext } from "@/contexts/AuthContext";
+
 import useSignInForm from "@/hooks/useSignInForm";
 
 import { SignInSchema } from "@/schemas/signin.schema";
@@ -7,11 +9,16 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import { MoonLoader } from "react-spinners";
+
 export default function SignInForm() {
+  const { handleSignIn } = useAuthContext();
+
   const form = useSignInForm();
 
   async function handleOnSubmit(data: SignInSchema) {
     try {
+      await handleSignIn(data);
       console.log("[AppAuthModal] SignInForm data: ", data);
     } catch (error) {
       console.error(
@@ -56,7 +63,12 @@ export default function SignInForm() {
           <Button type="reset" variant="secondary">
             Cancelar
           </Button>
-          <Button type="submit">Entrar</Button>
+          <Button type="submit">
+            Entrar
+            {form.formState.isSubmitting && (
+              <MoonLoader className="ml-2" color="white" size={18} />
+            )}
+          </Button>
         </DialogFooter>
       </form>
     </Form>
