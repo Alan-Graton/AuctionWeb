@@ -4,6 +4,7 @@ import React from "react";
 
 import { SignInSchema } from "@/schemas/signin.schema";
 import { SignUpSchema } from "@/schemas/signup.schema";
+import { HTTP } from "@/api/http";
 
 export type User = SignUpSchema;
 
@@ -31,15 +32,23 @@ export function AuthProvider({ children }: Props) {
 
   async function handleSignIn(data: SignInSchema) {
     try {
+      const response = await HTTP.post("auth/authenticate", data);
+
+      console.log("[AuthContext - handleSignIn] Response: ", response.data);
     } catch (error) {
       console.error("[AuthContext - handleSignIn] FAILED: ", error);
+      throw new Error(String(error)).message;
     }
   }
 
   async function handleSignUp(data: SignUpSchema) {
     try {
+      const response = await HTTP.post("auth/create-account", data);
+
+      console.log("[AuthContext - handleSignUp] Response: ", response.data);
     } catch (error) {
       console.error("[AuthContext - handleSignUp] FAILED: ", error);
+      throw new Error(String(error)).message;
     }
   }
 
