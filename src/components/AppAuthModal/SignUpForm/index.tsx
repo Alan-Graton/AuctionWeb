@@ -11,7 +11,11 @@ import { Input } from "@/components/ui/input";
 
 import { MoonLoader } from "react-spinners";
 
-export default function SignUpForm() {
+interface Props {
+  onClose: () => void;
+}
+
+export default function SignUpForm({ onClose }: Props) {
   const { handleSignUp } = useAuthContext();
 
   const form = useSignUpForm();
@@ -70,7 +74,7 @@ export default function SignUpForm() {
           </div>
         </>
         <DialogFooter>
-          <Button type="reset" variant="secondary">
+          <Button type="reset" variant="secondary" onClick={onClose}>
             Cancelar
           </Button>
           <Button type="submit">

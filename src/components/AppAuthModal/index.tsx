@@ -31,6 +31,12 @@ export default function AppAuthModal({
     signup: "Crie uma conta para começar",
   };
 
+  const onClose = () => {
+    setAuthModalControls(
+      (prevState) => (prevState = { ...prevState, open: false }),
+    );
+  };
+
   return (
     <>
       <Dialog
@@ -50,9 +56,9 @@ export default function AppAuthModal({
           </DialogHeader>
 
           {authModalControls.form === "signin" ? (
-            <SignInForm />
+            <SignInForm onClose={onClose} />
           ) : (
-            <SignUpForm />
+            <SignUpForm onClose={onClose} />
           )}
         </DialogContent>
       </Dialog>
