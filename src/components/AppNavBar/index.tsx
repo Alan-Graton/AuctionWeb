@@ -28,11 +28,13 @@ export default function AppNavBar() {
     <>
       <header className="w-full absolute top-0 z-10 backdrop-blur-md border-b-[1px] border-b-slate-00/100">
         <div className="p-4 flex justify-end gap-4">
-          <Button onClick={() => handleOpenAuthModal("signin")}>Entrar</Button>
           <Button
-            onClick={() => handleOpenAuthModal("signup")}
             variant="secondary"
+            onClick={() => handleOpenAuthModal("signin")}
           >
+            Entrar
+          </Button>
+          <Button onClick={() => handleOpenAuthModal("signup")}>
             Criar conta
           </Button>
         </div>
