@@ -27,11 +27,8 @@ export function AuthProvider({ children }: Props) {
   async function handleSignIn(data: SignInSchema) {
     try {
       const response = await HTTP.post("auth/authenticate", data);
-      console.log("response: ", response);
 
       localStorage.setItem("@AuctionWeb:access-token", response.data);
-
-      console.log("[AuthContext - handleSignIn] Response: ", response.data);
     } catch (error) {
       console.error("[AuthContext - handleSignIn] FAILED: ", error);
       throw error;
@@ -41,8 +38,6 @@ export function AuthProvider({ children }: Props) {
   async function handleSignUp(data: SignUpSchema) {
     try {
       const response = await HTTP.post("auth/create-account", data);
-
-      console.log("[AuthContext - handleSignUp] Response: ", response.data);
 
       localStorage.setItem("@AuctionWeb:access-token", response.data);
     } catch (error) {
