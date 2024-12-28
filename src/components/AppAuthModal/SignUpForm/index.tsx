@@ -1,3 +1,5 @@
+import React from "react";
+
 import { useAuthContext } from "@/contexts/AuthContext";
 
 import useSignUpForm from "@/hooks/useSignUpForm";
@@ -13,6 +15,7 @@ import { Input } from "@/components/ui/input";
 
 import { MoonLoader } from "react-spinners";
 import toast from "react-hot-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
   onClose: () => void;
@@ -21,12 +24,14 @@ interface Props {
 export default function SignUpForm({ onClose }: Props) {
   const { handleSignUp } = useAuthContext();
 
+  const [showPassword, setShowPassword] = React.useState(false);
+
   const form = useSignUpForm();
 
   async function handleOnSubmit(data: SignUpSchema) {
     try {
       await handleSignUp(data);
-      console.log("[AppAuthModal] SignUpForm data: ", data);
+      toast.success("Conta criada!");
     } catch (error: any) {
       let appError: AppErrorHandler | undefined = undefined;
 
@@ -68,11 +73,21 @@ export default function SignUpForm({ onClose }: Props) {
 
           <div>
             <FormLabel>Senha</FormLabel>
-            <Input
-              type="password"
-              placeholder="**********"
-              {...form.register("password")}
-            />
+            <div className="flex space-x-2">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="**********"
+                {...form.register("password")}
+              />
+              <Button
+                className="w-14"
+                variant="secondary"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </Button>
+            </div>
             {form.formState.errors.password && (
               <FormLabel className="text-muted-foreground text-red-400">
                 {form.formState.errors.password.message}

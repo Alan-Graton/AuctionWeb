@@ -26,7 +26,8 @@ export default function SignInForm({ onClose }: Props) {
   async function handleOnSubmit(data: SignInSchema) {
     try {
       await handleSignIn(data);
-      console.log("[AppAuthModal] SignInForm data: ", data);
+
+      toast.success("Bem-vindo de volta!");
     } catch (error: any) {
       let appError: AppErrorHandler | undefined = undefined;
 
