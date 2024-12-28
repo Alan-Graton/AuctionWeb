@@ -4,12 +4,15 @@ import useSignInForm from "@/hooks/useSignInForm";
 
 import { SignInSchema } from "@/schemas/signin.schema";
 
+import { AppErrorHandler } from "@/utils/AppErrorHandler.util";
+
 import { Form, FormLabel } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { MoonLoader } from "react-spinners";
+import { toast } from "react-hot-toast";
 
 interface Props {
   onClose: () => void;
@@ -24,11 +27,15 @@ export default function SignInForm({ onClose }: Props) {
     try {
       await handleSignIn(data);
       console.log("[AppAuthModal] SignInForm data: ", data);
-    } catch (error) {
-      console.error(
-        "[AppAuthModal - SignInForm] handleOnSubmit FAILED: ",
-        error,
-      );
+    } catch (error: any) {
+      let appError: AppErrorHandler | undefined = undefined;
+
+      if (error.response && error.response.data) {
+        appError = new AppErrorHandler({ ...error.response.data });
+        toast.error(appError.message);
+
+        return;
+      }
     }
   }
 

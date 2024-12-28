@@ -4,12 +4,15 @@ import useSignUpForm from "@/hooks/useSignUpForm";
 
 import { SignUpSchema } from "@/schemas/signup.schema";
 
+import { AppErrorHandler } from "@/utils/AppErrorHandler.util";
+
 import { Form, FormLabel } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { MoonLoader } from "react-spinners";
+import toast from "react-hot-toast";
 
 interface Props {
   onClose: () => void;
@@ -24,11 +27,15 @@ export default function SignUpForm({ onClose }: Props) {
     try {
       await handleSignUp(data);
       console.log("[AppAuthModal] SignUpForm data: ", data);
-    } catch (error) {
-      console.error(
-        "[AppAuthModal - SignUpForm] handleOnSubmit FAILED: ",
-        error,
-      );
+    } catch (error: any) {
+      let appError: AppErrorHandler | undefined = undefined;
+
+      if (error.response && error.response.data) {
+        appError = new AppErrorHandler({ ...error.response.data });
+
+        toast.error(appError.message);
+        return;
+      }
     }
   }
 

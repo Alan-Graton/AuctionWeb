@@ -37,7 +37,7 @@ export function AuthProvider({ children }: Props) {
       console.log("[AuthContext - handleSignIn] Response: ", response.data);
     } catch (error) {
       console.error("[AuthContext - handleSignIn] FAILED: ", error);
-      throw new Error(String(error)).message;
+      throw error;
     }
   }
 
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: Props) {
       console.log("[AuthContext - handleSignUp] Response: ", response.data);
     } catch (error) {
       console.error("[AuthContext - handleSignUp] FAILED: ", error);
-      throw new Error(String(error)).message;
+      throw error;
     }
   }
 
