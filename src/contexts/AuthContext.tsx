@@ -6,17 +6,11 @@ import { SignInSchema } from "@/schemas/signin.schema";
 import { SignUpSchema } from "@/schemas/signup.schema";
 import { HTTP } from "@/api/http";
 
-export type User = SignUpSchema;
+export type User = Omit<SignUpSchema, "password">;
 
 interface Context {
   user: User | null;
-  setUser: React.Dispatch<
-    React.SetStateAction<{
-      name: string;
-      email: string;
-      password: string;
-    } | null>
-  >;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   handleSignIn: (data: SignInSchema) => Promise<void>;
   handleSignUp: (data: SignUpSchema) => Promise<void>;
 }
@@ -33,6 +27,9 @@ export function AuthProvider({ children }: Props) {
   async function handleSignIn(data: SignInSchema) {
     try {
       const response = await HTTP.post("auth/authenticate", data);
+      console.log("response: ", response);
+
+      localStorage.setItem("@AuctionWeb:access-token", response.data);
 
       console.log("[AuthContext - handleSignIn] Response: ", response.data);
     } catch (error) {
@@ -46,6 +43,8 @@ export function AuthProvider({ children }: Props) {
       const response = await HTTP.post("auth/create-account", data);
 
       console.log("[AuthContext - handleSignUp] Response: ", response.data);
+
+      localStorage.setItem("@AuctionWeb:access-token", response.data);
     } catch (error) {
       console.error("[AuthContext - handleSignUp] FAILED: ", error);
       throw error;
