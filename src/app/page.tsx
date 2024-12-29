@@ -6,7 +6,7 @@ import Image from "next/image";
 import AppNavBar from "@/components/AppNavBar";
 import AppFooter from "@/components/AppFooter";
 
-import { Bids } from "@/@types";
+import { Item } from "@/@types";
 
 import {
   Card,
@@ -27,6 +27,16 @@ import { useForm } from "react-hook-form";
 import { BidSchema, bidSchema, DEFAULT_VALUES } from "@/schemas/bid.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Toaster } from "react-hot-toast";
+import { HTTP } from "@/api/http";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function Home() {
   const form = useForm<BidSchema>({
@@ -34,7 +44,15 @@ export default function Home() {
     defaultValues: DEFAULT_VALUES,
   });
 
-  const [bids, setBids] = React.useState<Bids[]>([]);
+  const [items, setItems] = React.useState<Item[]>([]);
+
+  async function getItems() {
+    try {
+      const response = (await HTTP.get("/items")).data;
+
+      setItems(response);
+    } catch (error) {}
+  }
 
   async function handleOnSubmit(data: BidSchema) {
     try {
@@ -43,6 +61,10 @@ export default function Home() {
     }
   }
 
+  React.useEffect(() => {
+    getItems();
+  }, []);
+
   return (
     <>
       <AppNavBar />
@@ -50,60 +72,75 @@ export default function Home() {
 
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-          <Card>
-            <CardContent className="">
-              <CardHeader className="items-center">
-                <Image
-                  className="dark:invert mb-6"
-                  src="/next.svg"
-                  alt="Next.js logo"
-                  width={100}
-                  height={38}
-                  priority
-                />
-                <CardTitle>Item leiloado - Gado</CardTitle>
-                <CardDescription>
-                  Faça seus lances aqui para concorrer ao item!
-                </CardDescription>
-              </CardHeader>
-              <Form {...form}>
-                <form
-                  className="space-y-8"
-                  onSubmit={form.handleSubmit(handleOnSubmit)}
-                >
-                  <section className="flex flex-col justify-center items-center space-y-4">
-                    <Label>Último lance: R$00,00</Label>
-                    <Label>Autor: ...</Label>
-                  </section>
-                  <CardFooter className="flex flex-col space-y-6">
-                    <div>
-                      <FormLabel>Faça seu lance!</FormLabel>
-                      <div className="flex gap-4">
-                        {/* FIXME: Deve ter formatação monetário */}
-                        <Input
-                          type="number"
-                          placeholder="R$10,00"
-                          {...form.register("price")}
-                        />
-                        <Button
-                          type="submit"
-                          variant="secondary"
-                          className="w-14"
-                        >
-                          <Send />
-                        </Button>
+          {items.map((item) => (
+            <Card key={item.id}>
+              <CardContent className="">
+                <CardHeader className="items-center">
+                  <Image
+                    className="dark:invert mb-6"
+                    src="/next.svg"
+                    alt="Next.js logo"
+                    width={100}
+                    height={38}
+                    priority
+                  />
+                  <CardTitle>{item.title}</CardTitle>
+                  <CardDescription>{item.description}</CardDescription>
+                </CardHeader>
+                <Form {...form}>
+                  <form
+                    className="space-y-8"
+                    onSubmit={form.handleSubmit(handleOnSubmit)}
+                  >
+                    <section className="flex flex-col justify-center items-center space-y-4">
+                      <Table>
+                        <TableCaption>Lances</TableCaption>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Autor</TableHead>
+                            <TableHead>Lance</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {item?.bids?.map((bid) => (
+                            <TableRow key={bid.id}>
+                              <TableCell>{bid.author}</TableCell>
+                              <TableCell>{bid.price}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </section>
+                    <CardFooter className="flex flex-col space-y-6">
+                      <div>
+                        <FormLabel>Faça seu lance!</FormLabel>
+                        <div className="flex gap-4">
+                          {/* FIXME: Deve ter formatação monetário */}
+                          <Input
+                            type="number"
+                            placeholder="R$10,00"
+                            {...form.register("price")}
+                          />
+                          <Button
+                            type="submit"
+                            variant="secondary"
+                            className="w-14"
+                          >
+                            <Send />
+                          </Button>
+                        </div>
+                        {form.formState.errors.price && (
+                          <FormLabel className="text-muted-foreground text-red-500">
+                            {form.formState.errors.price.message}
+                          </FormLabel>
+                        )}
                       </div>
-                      {form.formState.errors.price && (
-                        <FormLabel className="text-muted-foreground text-red-500">
-                          {form.formState.errors.price.message}
-                        </FormLabel>
-                      )}
-                    </div>
-                  </CardFooter>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+                    </CardFooter>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          ))}
         </main>
         <AppFooter />
       </div>
