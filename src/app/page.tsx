@@ -37,8 +37,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WEBSOCKET } from "@/api/websocket";
 
 export default function Home() {
+  WEBSOCKET.on("connect", () => {
+    WEBSOCKET.emit("ping");
+    console.log("Is socket connected? ", WEBSOCKET.connected);
+  });
+
+  WEBSOCKET.on("bids_events", () => {
+    console.log("Someting was triggered");
+  });
+
+  WEBSOCKET.on("disconnect", () => {
+    console.log("Is socket disconnected? ", WEBSOCKET.connected);
+  });
+
   const form = useForm<BidSchema>({
     resolver: zodResolver(bidSchema),
     defaultValues: DEFAULT_VALUES,
@@ -56,6 +70,14 @@ export default function Home() {
 
   async function handleOnSubmit(data: BidSchema) {
     try {
+      const response = (await HTTP.post("/bids", data)).data;
+
+      // WEBSOCKET.on("bids_events", () => {
+      //   console.log("Someting was triggered");
+      // });
+      // WEBSOCKET.emit("ping");
+
+      // console.log("POST - Bids: ", response);
     } catch (error) {
       console.error("[Auction] handleOnSubmit FAILED: ", error);
     }
