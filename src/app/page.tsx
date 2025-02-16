@@ -72,12 +72,9 @@ export default function Home() {
     try {
       const response = (await HTTP.post("/bids", data)).data;
 
-      // WEBSOCKET.on("bids_events", () => {
-      //   console.log("Someting was triggered");
-      // });
-      // WEBSOCKET.emit("ping");
+      WEBSOCKET.emit("bids_events");
 
-      // console.log("POST - Bids: ", response);
+      console.log("HTTP RESPONSE: ", response);
     } catch (error) {
       console.error("[Auction] handleOnSubmit FAILED: ", error);
     }
